@@ -3,6 +3,8 @@ Rails.application.routes.draw do
 
   get '/welcome' => 'welcome#index'
 
+  resources :games
+
   root to: 'welcome#index'
 
   get "/auth/google_login/callback" => "sessions#create"
