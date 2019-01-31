@@ -1,18 +1,13 @@
 <h1>Welcome!</h1>
 
-<% if current_user %>
-	<%= link_to "Sign out", signout_path %>
-  <%= current_user.name %>
-  <%= current_user.inspect %>
+<h2>Your games</h2>
 
-  <h2>Your games</h2>
-
-  <ul>
-    <% current_user.games.each do |game| %>
-      <li><%= link_to "#{game}", game %></li>
-    <% end %>
-    <li><%= link_to "Create new game", new_game_path %></li>
-  </ul>
-<% else %>
-  <%= link_to "Sign in with Google", "/auth/google_login" %>
-<% end %>
+<ul>
+  <% current_user.games.each do |game| %>
+    <li>
+      <%= link_to "#{game}", game %>
+      (<%= link_to "delete", game, method: :delete, data: { confirm: "Are you sure?" } %>)
+    </li>
+  <% end %>
+  <li><%= link_to "Create new game", new_game_path %></li>
+</ul>

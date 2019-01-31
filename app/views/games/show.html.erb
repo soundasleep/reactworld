@@ -3,3 +3,15 @@
 <ul>
   <li>Player <%= @game.user %></li>
 </ul>
+
+<h2>Tiles</h2>
+
+<table>
+  <% @game.current_level.tiles_as_arrays.each do |row| %>
+    <tr>
+      <% row.each do |column| %>
+        <td><%= column %></td>
+      <% end %>
+    </tr>
+  <% end %>
+</table>
