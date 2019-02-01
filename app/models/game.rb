@@ -4,7 +4,8 @@ class Game < ApplicationRecord
   has_many :levels, dependent: :destroy
   belongs_to :current_level, class_name: "Level", foreign_key: :current_level_id, optional: true
 
-  validates :current_level_id, numericality: { greater_than: 0 }, allow_nil: true
+  validates :player_x, :player_y,
+    numericality: { greater_than_or_equal: 0 }, allow_nil: true
 
   def to_s
     "<Game #{id} at depth #{current_level&.depth || "(none)"}>"

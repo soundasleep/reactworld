@@ -6,6 +6,10 @@ Rails.application.routes.draw do
   resources :games do
     resources :levels do
       post :regenerate
+      post :north
+      post :south
+      post :west
+      post :east
     end
   end
 

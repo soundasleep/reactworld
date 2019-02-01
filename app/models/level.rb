@@ -25,18 +25,16 @@ class Level < ApplicationRecord
     end
   end
 
+  def within_bounds?(x, y)
+    x >= 0 && y >= 0 && x < width && y < height
+  end
+
   private
 
   def entrance_is_within_bounds
-    if entrance_x.present? && width.present?
-      if entrance_x < 0 || entrance_x >= width
-        errors.add(:entrance_x, "is outside of width bounds #{width}")
-      end
-    end
-    if entrance_y.present? && height.present?
-      if entrance_y < 0 || entrance_y >= height
-        errors.add(:entrance_y, "is outside of height bounds #{height}")
-      end
+    if entrance_x.present? && width.present? && entrance_y.present? && height.present?
+      errors.add(:entrance_x, "is outside of bounds") unless within_bounds?(entrance_x, entrance_y)
+      errors.add(:entrance_y, "is outside of bounds") unless within_bounds?(entrance_x, entrance_y)
     end
   end
 end
