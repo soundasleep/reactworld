@@ -3,7 +3,11 @@ Rails.application.routes.draw do
 
   get '/welcome' => 'welcome#index'
 
-  resources :games
+  resources :games do
+    resources :levels do
+      post :regenerate
+    end
+  end
 
   root to: 'welcome#index'
 

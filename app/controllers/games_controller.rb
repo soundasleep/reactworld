@@ -22,6 +22,8 @@ class GamesController < ApplicationController
       flash[:notices] = "You got lost - putting you back to the start."
       @game.update_attributes! current_level: @game.levels.order(depth: :asc).first
     end
+
+    redirect_to [@game, @game.current_level]
   end
 
   def destroy

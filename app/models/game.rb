@@ -7,7 +7,7 @@ class Game < ApplicationRecord
   validates :current_level_id, numericality: { greater_than: 0 }, allow_nil: true
 
   def to_s
-    "<Game #{id}>"
+    "<Game #{id} at depth #{current_level&.depth || "(none)"}>"
   end
 
   def finished?

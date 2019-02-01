@@ -1,6 +1,12 @@
 class Level < ApplicationRecord
   belongs_to :game
 
+  validates :depth, numericality: { greater_than: 0 }
+
+  def to_s
+    "<Level #{id} at depth #{depth}>"
+  end
+
   def assign_tiles(array_of_arrays)
     flattened = array_of_arrays.map do |row|
       row.join(",")

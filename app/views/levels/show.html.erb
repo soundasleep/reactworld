@@ -1,0 +1,18 @@
+<h1><%= current_game %> level <%= @level.depth %></h1>
+
+<ul>
+  <li>Player <%= current_game.user %></li>
+  <li><%= link_to "regenerate level (debug only)", game_level_regenerate_path(current_game, @level), method: :post, data: { confirm: "Are you sure?" } %></li>
+</ul>
+
+<h2>Tiles</h2>
+
+<table>
+  <% @level.tiles_as_arrays.each do |row| %>
+    <tr>
+      <% row.each do |column| %>
+        <td><%= column %></td>
+      <% end %>
+    </tr>
+  <% end %>
+</table>
