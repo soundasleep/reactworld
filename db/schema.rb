@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_01_31_230455) do
+ActiveRecord::Schema.define(version: 2019_02_01_013408) do
 
   create_table "games", force: :cascade do |t|
     t.integer "user_id", null: false
@@ -28,6 +28,8 @@ ActiveRecord::Schema.define(version: 2019_01_31_230455) do
     t.text "tiles", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "entrance_x", default: -1, null: false
+    t.integer "entrance_y", default: -1, null: false
   end
 
   create_table "sessions", force: :cascade do |t|
