@@ -32,7 +32,7 @@ class Level < ApplicationRecord
   end
 
   def tile_is_visitable?(x, y)
-    Tile::is_visitable?(tiles_as_arrays[y][x]) && !any_monster_at?(x, y)
+    within_bounds?(x, y) && Tile::is_visitable?(tiles_as_arrays[y][x]) && !any_monster_at?(x, y)
   end
 
   def any_monster_at?(x, y)

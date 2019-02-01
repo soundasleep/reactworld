@@ -170,7 +170,7 @@ class GenerateLevel
         monster = level.monsters.create!({
           monster_x: x,
           monster_y: y,
-          health: 10,
+          health: 5 + rand(10),
           monster_level: 1,
           monster_type: Monster::SPIDER,
         })
