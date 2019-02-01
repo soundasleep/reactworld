@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_02_01_023224) do
+ActiveRecord::Schema.define(version: 2019_02_01_025434) do
 
   create_table "games", force: :cascade do |t|
     t.integer "user_id", null: false
@@ -32,6 +32,17 @@ ActiveRecord::Schema.define(version: 2019_02_01_023224) do
     t.datetime "updated_at", null: false
     t.integer "entrance_x", default: -1, null: false
     t.integer "entrance_y", default: -1, null: false
+  end
+
+  create_table "monsters", force: :cascade do |t|
+    t.integer "level_id", null: false
+    t.integer "monster_x", null: false
+    t.integer "monster_y", null: false
+    t.integer "health", null: false
+    t.integer "monster_level", null: false
+    t.string "monster_type", limit: 32, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "sessions", force: :cascade do |t|

@@ -109,6 +109,8 @@ class GenerateLevel
 
     level.save!
 
+    generate_monsters! level, up_to: ((width + height) / 2).floor
+
     return level
   end
 
@@ -157,5 +159,22 @@ class GenerateLevel
 
     # North
     fill_rect! tiles, tile, from_x: to_x, to_x: to_x, from_y: from_y, to_y: to_y, overwrite: overwrite
+  end
+
+  def generate_monsters!(level, up_to:)
+    up_to.times do
+      x = rand(level.width)
+      y = rand(level.height)
+
+      if level.tile_is_visitable?(x, y) && !level.any_monster_at?(x, y)
+        monster = level.monsters.create!({
+          monster_x: x,
+          monster_y: y,
+          health: 10,
+          monster_level: 1,
+          monster_type: Monster::SPIDER,
+        })
+      end
+    end
   end
 end

@@ -1,6 +1,8 @@
 class Level < ApplicationRecord
   belongs_to :game
 
+  has_many :monsters, dependent: :destroy
+
   validates :depth, numericality: { greater_than: 0 }
   validates :width, :height, :entrance_x, :entrance_y,
       numericality: { greater_than_or_equal: 0 }
@@ -27,6 +29,14 @@ class Level < ApplicationRecord
 
   def within_bounds?(x, y)
     x >= 0 && y >= 0 && x < width && y < height
+  end
+
+  def tile_is_visitable?(x, y)
+    Tile::is_visitable?(tiles_as_arrays[y][x]) && !any_monster_at?(x, y)
+  end
+
+  def any_monster_at?(x, y)
+    monsters.where(monster_x: x, monster_y: y).any?
   end
 
   private

@@ -13,6 +13,11 @@ Go
 <%= link_to "west", game_level_west_path(current_game, @level), method: :post %>
 <%= link_to "east", game_level_east_path(current_game, @level), method: :post %>
 
+<%# Load all monsters for performance reasons %>
+<% monsters = @level.monsters.map do |monster|
+  [ [monster.monster_x, monster.monster_y], monster ]
+end.to_h %>
+
 <table>
   <% @level.tiles_as_arrays.each.with_index do |row, y| %>
     <tr>
@@ -21,6 +26,9 @@ Go
           <%= column %>
           <% if y == current_game.player_y && x == current_game.player_x %>
             Me!
+          <% end %>
+          <% if monsters[[x, y]] %>
+            <%= monsters[[x, y]] %>
           <% end %>
         </td>
       <% end %>

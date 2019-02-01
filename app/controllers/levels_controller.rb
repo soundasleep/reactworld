@@ -31,21 +31,25 @@ class LevelsController < ApplicationController
 
   def north
     apply_movement! x: 0, y: -1, message: "You have travelled north"
+    move_monsters!
     redirect_to [current_game, @level]
   end
 
   def south
     apply_movement! x: 0, y: 1, message: "You have travelled south"
+    move_monsters!
     redirect_to [current_game, @level]
   end
 
   def west
     apply_movement! x: -1, y: 0, message: "You have travelled west"
+    move_monsters!
     redirect_to [current_game, @level]
   end
 
   def east
     apply_movement! x: 1, y: 0, message: "You have travelled east"
+    move_monsters!
     redirect_to [current_game, @level]
   end
 
@@ -77,7 +81,7 @@ class LevelsController < ApplicationController
     new_y = current_game.player_y + y
 
     if @level.within_bounds?(new_x, new_y)
-      if Tile::is_visitable?(tiles[new_y][new_x])
+      if @level.tile_is_visitable?(new_x, new_y)
         current_game.update_attributes!({
           player_x: new_x,
           player_y: new_y,
@@ -89,6 +93,39 @@ class LevelsController < ApplicationController
       end
     else
       flash[:errors] = "You would fall off the edge of the universe!"
+    end
+  end
+
+  def move_monsters!
+    @level.monsters.each do |monster|
+      next if monster.dead?
+
+      # move 50% of the time
+      if rand(2) <= 1
+        # Move randomly
+        movement = [:north, :south, :west, :east].sample
+        dx = 0
+        dy = 0
+
+        case movement
+        when :north
+          dy = -1
+        when :south
+          dy = 1
+        when :west
+          dx = -1
+        when :east
+          dx = 1
+        else
+          raise ArgumentError, "Did not expect monster movement of #{movement}"
+        end
+
+        if @level.tile_is_visitable?(monster.monster_x + dx, monster.monster_y + dy)
+          unless @level.any_monster_at?(monster.monster_x + dx, monster.monster_y + dy)
+            monster.update_attributes! monster_x: monster.monster_x + dx, monster_y: monster.monster_y + dy
+          end
+        end
+      end
     end
   end
 end
