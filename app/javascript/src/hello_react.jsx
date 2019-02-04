@@ -27,4 +27,4 @@ document.addEventListener('DOMContentLoaded', () => {
   )
 })
 
-export { Hello }
+export default Hello
