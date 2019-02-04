@@ -7,6 +7,17 @@
 
     <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+
+    <%# Include everything (incl React) in one giant pack %>
+    <%= javascript_pack_tag 'application' %>
+    <%= stylesheet_pack_tag 'application' %>
+
+    <%#
+      Split out common components, include things as necessary. Requires webpacker v4+
+      (still in -pre) and an intimate knowledge of how webpacker packs work.
+    %>
+    <%#= javascript_packs_with_chunks_tag 'application', 'just_hello_react' %>
+    <%#= stylesheet_packs_with_chunks_tag 'application', 'just_hello_react' %>
   </head>
 
   <body>

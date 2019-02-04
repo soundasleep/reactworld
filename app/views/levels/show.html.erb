@@ -35,3 +35,18 @@ end.to_h %>
     </tr>
   <% end %>
 </table>
+
+<%#
+  NOTE that while you CAN do this anywhere, it's probably not ideal, because
+  you end up importing e.g. React multiple times per _pack_tag.
+  But,
+
+  Suggestion:
+  - For a pattern library, use javascript_pack_tag `admin-pattern-library`,
+    that then uses e.g. <select data-apl="Dropdown" />
+
+  - To have more granular inclusions, use javascript_packs_with_chunks_tag,
+    and let pages/views define their specific chunks.
+
+%>
+<%#= javascript_pack_tag 'just_hello_react' %>
