@@ -7,8 +7,14 @@
 // To reference this file, add <%= javascript_pack_tag 'application' %> to the appropriate
 // layout file, like app/views/layouts/application.html.erb
 
+// Prob need to use WebpackerReact only from root packs
+import WebpackerReact from 'webpacker-react'
+//import Turbolinks from 'turbolinks'
+Turbolinks.start()
+
 import "src/application.scss"
 
 console.log('Hello World from Webpacker')
 
 import Hello from "src/hello_react"
+WebpackerReact.setup({ Hello })
