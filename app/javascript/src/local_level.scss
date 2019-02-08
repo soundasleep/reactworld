@@ -28,6 +28,11 @@ table.local-level {
       &.unknown {
         background: magenta;
       }
+
+      a.visit {
+        display: block;
+        font-weight: bold;
+      }
     }
   }
 }

@@ -62,6 +62,15 @@ class LocalLevel extends React.Component {
     //   </tbody>
     // </table>
 
+    // returns a string, not React
+    const renderMonsters = (monsters) => {
+      let monsterText = monsters.map((monster) => (
+        `${monster.type} (${monster.health} hp)`
+      ));
+
+      return monsterText.join(", ");
+    };
+
     const renderTile = (tile) => {
       // (...); is necessary for .jsx syntax.
       // {...; return X} is necessary to be a valid function
@@ -69,7 +78,7 @@ class LocalLevel extends React.Component {
       let tileText = [];
 
       if (tile.monsters.length > 0) {
-        tileText.push(`(with ${tile.monsters.length} monsters)`);
+        tileText.push(renderMonsters(tile.monsters));
       }
 
       if (tile.x == this.props.data.player.x && tile.y == this.props.data.player.y) {
@@ -80,10 +89,16 @@ class LocalLevel extends React.Component {
       let tileContent = TILE_CLASSES[parseInt(tile.tile, 10)];
       tileClasses.push(tileContent || "unknown");
 
+      let button = "";
+      if (tile.visit_path) {
+        button = <a className="visit" href={tile.visit_path} data-method="post">visit</a>
+      }
+
       return (
         <td key={tile.x + "," + tile.y} className={tileClasses.join(" ")}>
           <small className="debug">({tile.x}, {tile.y})</small>
-          { tileText.join(" ") }
+          {tileText.join(" ")}
+          {button}
         </td>
       );
     };

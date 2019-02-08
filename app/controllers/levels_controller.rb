@@ -151,12 +151,24 @@ class LevelsController < ApplicationController
 
       (-visibility .. visibility).each do |dx|
         if level.within_bounds?(player_x + dx, player_y + dy)
-          row << {
+          tile = {
             x: player_x + dx,
             y: player_y + dy,
             tile: level.tiles_as_arrays[player_y + dy][player_x + dx],
             monsters: monsters_as_json(level.monsters_at(player_x + dx, player_y + dy)),
           }
+
+          if dx == 1 && dy == 0
+            tile[:visit_path] = game_level_east_path(game, level)
+          elsif dx == -1 && dy == 0
+            tile[:visit_path] = game_level_west_path(game, level)
+          elsif dx == 0 && dy == 1
+            tile[:visit_path] = game_level_south_path(game, level)
+          elsif dx == 0 && dy == -1
+            tile[:visit_path] = game_level_north_path(game, level)
+          end
+
+          row << tile
         end
       end
 

@@ -7,12 +7,6 @@
 
 <h2>Tiles</h2>
 
-Go
-<%= link_to "north", game_level_north_path(current_game, @level), method: :post %>
-<%= link_to "south", game_level_south_path(current_game, @level), method: :post %>
-<%= link_to "west", game_level_west_path(current_game, @level), method: :post %>
-<%= link_to "east", game_level_east_path(current_game, @level), method: :post %>
-
 <%# Load all monsters for performance reasons %>
 <% monsters = @level.monsters.map do |monster|
   [ [monster.monster_x, monster.monster_y], monster ]
