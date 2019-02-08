@@ -46,6 +46,32 @@ const TILE_CLASSES = {
 };
 
 class Tile extends React.Component {
+  handleVisit(e, path) {
+    if (!this.props.parent) {
+      throw "No parent defined for Tile; any successful result could not be rendered";
+    }
+
+    // new fetch API c.f. jQuery
+    fetch(path, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector("meta[name='csrf-token']").getAttribute('content'),
+      },
+    })
+      .then((response) => response.json()) // convert Promise to JSON (???)
+      .then((response) => {
+        this.props.parent.setState({
+          messages: response.messages,
+          errors:   response.errors,
+        });
+
+        if (response.level) {
+          this.props.parent.setState({ data: response.level });
+        };
+      });
+  }
+
   render() {
     // returns a string, not React
     const renderMonsters = (monsters) => {
@@ -72,7 +98,13 @@ class Tile extends React.Component {
 
     let button = "";
     if (this.props.tile.visit_path) {
-      button = <a className="visit" href={this.props.tile.visit_path} data-method="post">visit</a>
+      // NOTE if you use data-method, then onClick will never be called (Chrome)
+
+      button = <button className="visit"
+          onClick={(e) => this.handleVisit(e, this.props.tile.visit_path)}
+        >
+          visit
+        </button>
     }
 
     return (
@@ -86,6 +118,12 @@ class Tile extends React.Component {
 }
 
 class LocalLevel extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = { data: props.data };
+  }
+
   render() {
     // valid, but ugh, so many loops
     // return <table>
@@ -108,7 +146,7 @@ class LocalLevel extends React.Component {
       //   AND to have if/lets/vars inside the block!
 
       const tableTiles = row.map((tile) =>
-        <Tile key={tile.x + "," + tile.y} tile={tile} player={this.props.data.player} />
+        <Tile key={tile.x + "," + tile.y} tile={tile} player={this.state.data.player} parent={this} />
       );
 
       return <tr key={"row" + index}>
@@ -116,11 +154,34 @@ class LocalLevel extends React.Component {
       </tr>
     };
 
-    return <table className="local-level">
+    const messages = (() => {
+      if (this.state.messages) {
+        return (
+          <div className="notice">{this.state.messages}</div>
+        );
+      }
+    });
+
+    const errors = (() => {
+      if (this.state.errors) {
+        return (
+          <div className="error">{this.state.errors}</div>
+        );
+      }
+    });
+
+    return (<div>
+      <div className="message-bar">
+        {messages()}
+        {errors()}
+      </div>
+
+      <table className="local-level">
         <tbody>
-          { this.props.data.tiles.map(renderRow) }
+          { this.state.data.tiles.map(renderRow) }
         </tbody>
       </table>
+    </div>);
   }
 }
 

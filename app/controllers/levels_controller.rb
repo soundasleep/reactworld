@@ -37,27 +37,19 @@ class LevelsController < ApplicationController
   end
 
   def north
-    apply_movement! x: 0, y: -1, message: "You have travelled north"
-    move_monsters!
-    redirect_to [current_game, @level]
+    return apply_movement! x: 0, y: -1, message: "You have travelled north"
   end
 
   def south
-    apply_movement! x: 0, y: 1, message: "You have travelled south"
-    move_monsters!
-    redirect_to [current_game, @level]
+    return apply_movement! x: 0, y: 1, message: "You have travelled south"
   end
 
   def west
-    apply_movement! x: -1, y: 0, message: "You have travelled west"
-    move_monsters!
-    redirect_to [current_game, @level]
+    return apply_movement! x: -1, y: 0, message: "You have travelled west"
   end
 
   def east
-    apply_movement! x: 1, y: 0, message: "You have travelled east"
-    move_monsters!
-    redirect_to [current_game, @level]
+    return apply_movement! x: 1, y: 0, message: "You have travelled east"
   end
 
   private
@@ -87,6 +79,8 @@ class LevelsController < ApplicationController
     new_x = current_game.player_x + x
     new_y = current_game.player_y + y
 
+    any_errors = any_notices = nil
+
     if @level.within_bounds?(new_x, new_y)
       if @level.tile_is_visitable?(new_x, new_y)
         current_game.update_attributes!({
@@ -94,12 +88,30 @@ class LevelsController < ApplicationController
           player_y: new_y,
         })
 
-        flash[:notices] = message
+        any_notices = message
       else
-        flash[:errors] = "You feel a mysterious force pushing you back."
+        any_errors = "You feel a mysterious force pushing you back."
       end
     else
-      flash[:errors] = "You would fall off the edge of the universe!"
+      any_errors = "You would fall off the edge of the universe!"
+    end
+
+    move_monsters!
+
+    return respond_to do |format|
+      format.html do
+        flash[:notices] = any_notices
+        flash[:errors] = any_errors
+        redirect_to [current_game, @level]
+      end
+
+      format.json do
+        render json: {
+          messages: any_notices,
+          errors:   any_errors,
+          level:    local_level_as_json(@level, current_game),
+        }
+      end
     end
   end
 
@@ -159,13 +171,13 @@ class LevelsController < ApplicationController
           }
 
           if dx == 1 && dy == 0
-            tile[:visit_path] = game_level_east_path(game, level)
+            tile[:visit_path] = game_level_east_path(game, level, format: :json)
           elsif dx == -1 && dy == 0
-            tile[:visit_path] = game_level_west_path(game, level)
+            tile[:visit_path] = game_level_west_path(game, level, format: :json)
           elsif dx == 0 && dy == 1
-            tile[:visit_path] = game_level_south_path(game, level)
+            tile[:visit_path] = game_level_south_path(game, level, format: :json)
           elsif dx == 0 && dy == -1
-            tile[:visit_path] = game_level_north_path(game, level)
+            tile[:visit_path] = game_level_north_path(game, level, format: :json)
           end
 
           row << tile
