@@ -1,37 +1,49 @@
 $unit-size: 64px;
 $font-size: 16px;
 
-table.local-level {
-  td {
-    width: $unit-size;
+div[data-react-class="LocalLevel"] {
+  width: $unit-size * 9;
+  margin: 0 auto;
+
+  div.message-bar {
+    display: block;
     height: $unit-size;
-    font-size: $font-size;
-    vertical-align: top;
-    text-align: center;
+  }
 
-    small.debug {
-      font-size: $font-size * 0.8;
-      color: rgba(0,0,0,0.3);
-      display: block;
-    }
+  table.local-level {
+    margin: 0 auto;
 
-    &.tile {
-      &.void {
-        background: black;
-      }
-      &.wall {
-        background: mix(yellow, white);
-      }
-      &.floor {
-        background: #ccc;
-      }
-      &.unknown {
-        background: magenta;
-      }
+    td {
+      width: $unit-size;
+      height: $unit-size;
+      font-size: $font-size;
+      vertical-align: top;
+      text-align: center;
 
-      a.visit {
+      small.debug {
+        font-size: $font-size * 0.8;
+        color: rgba(0,0,0,0.3);
         display: block;
-        font-weight: bold;
+      }
+
+      &.tile {
+        &.void {
+          background: black;
+        }
+        &.wall {
+          background: mix(yellow, white);
+        }
+        &.floor {
+          background: #ccc;
+        }
+        &.unknown {
+          background: magenta;
+        }
+
+        a.visit {
+          display: block;
+          font-weight: bold;
+        }
       }
     }
   }
