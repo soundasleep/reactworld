@@ -46,7 +46,9 @@ const TILE_CLASSES = {
 };
 
 class Tile extends React.Component {
-  handleVisit(e, path) {
+  handleVisit = (e) => {
+    let path = this.props.tile.visit_path;
+
     if (!this.props.parent) {
       throw "No parent defined for Tile; any successful result could not be rendered";
     }
@@ -70,7 +72,7 @@ class Tile extends React.Component {
           this.props.parent.setState({ data: response.level });
         };
       });
-  }
+  };
 
   render() {
     // returns a string, not React
@@ -101,7 +103,7 @@ class Tile extends React.Component {
       // NOTE if you use data-method, then onClick will never be called (Chrome)
 
       button = <button className="visit"
-          onClick={(e) => this.handleVisit(e, this.props.tile.visit_path)}
+          onClick={this.handleVisit}
         >
           visit
         </button>
@@ -149,7 +151,7 @@ class LocalLevel extends React.Component {
         <Tile key={tile.x + "," + tile.y} tile={tile} player={this.state.data.player} parent={this} />
       );
 
-      return <tr key={"row" + index}>
+      return <tr key={`row${index}`}>
         { tableTiles }
       </tr>
     };
