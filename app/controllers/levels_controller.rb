@@ -129,7 +129,9 @@ class LevelsController < ApplicationController
 
         if @level.tile_is_visitable?(monster.monster_x + dx, monster.monster_y + dy)
           unless @level.any_monster_at?(monster.monster_x + dx, monster.monster_y + dy)
-            monster.update_attributes! monster_x: monster.monster_x + dx, monster_y: monster.monster_y + dy
+            unless current_game.player_x == monster.monster_x + dx && current_game.player_y == monster.monster_y + dy
+              monster.update_attributes! monster_x: monster.monster_x + dx, monster_y: monster.monster_y + dy
+            end
           end
         end
       end
