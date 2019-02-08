@@ -13,6 +13,13 @@ class LevelsController < ApplicationController
         current_game.update_attributes! player_x: @level.entrance_x, player_y: @level.entrance_y
       end
     end
+
+    respond_to do |format|
+      format.html
+      format.json {
+        render json: local_level_as_json(@level, current_game)
+      }
+    end
   end
 
   def regenerate
@@ -127,5 +134,56 @@ class LevelsController < ApplicationController
         end
       end
     end
+  end
+
+  helper_method :local_level_as_json
+  def local_level_as_json(level, game)
+    player_x = game.player_x
+    player_y = game.player_y
+
+    visibility = 3
+
+    tiles = []
+    (-visibility .. visibility).each do |dy|
+      row = []
+
+      (-visibility .. visibility).each do |dx|
+        if level.within_bounds?(player_x + dx, player_y + dy)
+          row << {
+            x: player_x + dx,
+            y: player_y + dy,
+            tile: level.tiles_as_arrays[player_y + dy][player_x + dx],
+            monsters: monsters_as_json(level.monsters_at(player_x + dx, player_y + dy)),
+          }
+        end
+      end
+
+      tiles << row unless row.empty?
+    end
+
+    return {
+      player: {
+        x: player_x,
+        y: player_y,
+      },
+      tiles: tiles,
+    }
+  end
+
+  def monsters_as_json(monsters)
+    monsters.map do |monster|
+      monster_as_json(monster)
+    end
+  end
+
+  def monster_as_json(monster)
+    {
+      type: monster.monster_type,
+      x: monster.monster_x,
+      y: monster.monster_y,
+      alive: monster.alive?,
+      health: monster.health,
+      level: monster.monster_level,
+    }
   end
 end
