@@ -18,3 +18,6 @@ console.log('Hello World from Webpacker')
 
 import Hello from "src/hello_react"
 WebpackerReact.setup({ Hello })
+
+import LocalLevel from "src/local_level"
+WebpackerReact.setup({ LocalLevel })

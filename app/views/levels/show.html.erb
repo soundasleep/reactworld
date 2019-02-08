@@ -7,37 +7,15 @@
 
 <h2>Tiles</h2>
 
-Go
-<%= link_to "north", game_level_north_path(current_game, @level), method: :post %>
-<%= link_to "south", game_level_south_path(current_game, @level), method: :post %>
-<%= link_to "west", game_level_west_path(current_game, @level), method: :post %>
-<%= link_to "east", game_level_east_path(current_game, @level), method: :post %>
-
 <%# Load all monsters for performance reasons %>
 <% monsters = @level.monsters.map do |monster|
   [ [monster.monster_x, monster.monster_y], monster ]
 end.to_h %>
 
-<table>
-  <% @level.tiles_as_arrays.each.with_index do |row, y| %>
-    <tr>
-      <% row.each.with_index do |column, x| %>
-        <td>
-          <%= column %>
-          <% if y == current_game.player_y && x == current_game.player_x %>
-            Me!
-          <% end %>
-          <% if monsters[[x, y]] %>
-            <%= monsters[[x, y]] %>
-          <% end %>
-        </td>
-      <% end %>
-    </tr>
-  <% end %>
-</table>
+<%= react_component('LocalLevel', data: local_level_as_json(@level, current_game)) %>
 
 <%#
-  NOTE that while you CAN do this anywhere, it's probably not ideal, because
+  NOTE that while you CAN do javascript_pack_tag anywhere, it's probably not ideal, because
   you end up importing e.g. React multiple times per _pack_tag.
   But,
 

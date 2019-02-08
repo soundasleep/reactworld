@@ -36,7 +36,11 @@ class Level < ApplicationRecord
   end
 
   def any_monster_at?(x, y)
-    monsters.where(monster_x: x, monster_y: y).any?
+    monsters_at(x, y).any?
+  end
+
+  def monsters_at(x, y)
+    monsters.where(monster_x: x, monster_y: y)
   end
 
   private

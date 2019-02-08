@@ -1,13 +1,17 @@
 <h1>Welcome!</h1>
 
-<h2>Your games</h2>
+<% if current_user.present? %>
+  <h2>Your games</h2>
 
-<ul>
-  <% current_user.games.each do |game| %>
-    <li>
-      <%= link_to "#{game}", game %>
-      (<%= link_to "delete", game, method: :delete, data: { confirm: "Are you sure?" } %>)
-    </li>
-  <% end %>
-  <li><%= link_to "Create new game", new_game_path %></li>
-</ul>
+  <ul>
+    <% current_user.games.each do |game| %>
+      <li>
+        <%= link_to "#{game}", game %>
+        (<%= link_to "delete", game, method: :delete, data: { confirm: "Are you sure?" } %>)
+      </li>
+    <% end %>
+    <li><%= link_to "Create new game", new_game_path %></li>
+  </ul>
+<% else %>
+  Login to play some games!
+<% end %>

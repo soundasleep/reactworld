@@ -13,6 +13,13 @@ class LevelsController < ApplicationController
         current_game.update_attributes! player_x: @level.entrance_x, player_y: @level.entrance_y
       end
     end
+
+    respond_to do |format|
+      format.html
+      format.json {
+        render json: local_level_as_json(@level, current_game)
+      }
+    end
   end
 
   def regenerate
@@ -30,27 +37,19 @@ class LevelsController < ApplicationController
   end
 
   def north
-    apply_movement! x: 0, y: -1, message: "You have travelled north"
-    move_monsters!
-    redirect_to [current_game, @level]
+    return apply_movement! x: 0, y: -1, message: "You have travelled north"
   end
 
   def south
-    apply_movement! x: 0, y: 1, message: "You have travelled south"
-    move_monsters!
-    redirect_to [current_game, @level]
+    return apply_movement! x: 0, y: 1, message: "You have travelled south"
   end
 
   def west
-    apply_movement! x: -1, y: 0, message: "You have travelled west"
-    move_monsters!
-    redirect_to [current_game, @level]
+    return apply_movement! x: -1, y: 0, message: "You have travelled west"
   end
 
   def east
-    apply_movement! x: 1, y: 0, message: "You have travelled east"
-    move_monsters!
-    redirect_to [current_game, @level]
+    return apply_movement! x: 1, y: 0, message: "You have travelled east"
   end
 
   private
@@ -80,6 +79,8 @@ class LevelsController < ApplicationController
     new_x = current_game.player_x + x
     new_y = current_game.player_y + y
 
+    any_errors = any_notices = nil
+
     if @level.within_bounds?(new_x, new_y)
       if @level.tile_is_visitable?(new_x, new_y)
         current_game.update_attributes!({
@@ -87,12 +88,30 @@ class LevelsController < ApplicationController
           player_y: new_y,
         })
 
-        flash[:notices] = message
+        any_notices = message
       else
-        flash[:errors] = "You feel a mysterious force pushing you back."
+        any_errors = "You feel a mysterious force pushing you back."
       end
     else
-      flash[:errors] = "You would fall off the edge of the universe!"
+      any_errors = "You would fall off the edge of the universe!"
+    end
+
+    move_monsters!
+
+    return respond_to do |format|
+      format.html do
+        flash[:notices] = any_notices
+        flash[:errors] = any_errors
+        redirect_to [current_game, @level]
+      end
+
+      format.json do
+        render json: {
+          messages: any_notices,
+          errors:   any_errors,
+          level:    local_level_as_json(@level, current_game),
+        }
+      end
     end
   end
 
@@ -122,10 +141,75 @@ class LevelsController < ApplicationController
 
         if @level.tile_is_visitable?(monster.monster_x + dx, monster.monster_y + dy)
           unless @level.any_monster_at?(monster.monster_x + dx, monster.monster_y + dy)
-            monster.update_attributes! monster_x: monster.monster_x + dx, monster_y: monster.monster_y + dy
+            unless current_game.player_x == monster.monster_x + dx && current_game.player_y == monster.monster_y + dy
+              monster.update_attributes! monster_x: monster.monster_x + dx, monster_y: monster.monster_y + dy
+            end
           end
         end
       end
     end
+  end
+
+  helper_method :local_level_as_json
+  def local_level_as_json(level, game)
+    player_x = game.player_x
+    player_y = game.player_y
+
+    visibility = 3
+
+    tiles = []
+    (-visibility .. visibility).each do |dy|
+      row = []
+
+      (-visibility .. visibility).each do |dx|
+        if level.within_bounds?(player_x + dx, player_y + dy)
+          tile = {
+            x: player_x + dx,
+            y: player_y + dy,
+            tile: level.tiles_as_arrays[player_y + dy][player_x + dx],
+            monsters: monsters_as_json(level.monsters_at(player_x + dx, player_y + dy)),
+          }
+
+          if dx == 1 && dy == 0
+            tile[:visit_path] = game_level_east_path(game, level, format: :json)
+          elsif dx == -1 && dy == 0
+            tile[:visit_path] = game_level_west_path(game, level, format: :json)
+          elsif dx == 0 && dy == 1
+            tile[:visit_path] = game_level_south_path(game, level, format: :json)
+          elsif dx == 0 && dy == -1
+            tile[:visit_path] = game_level_north_path(game, level, format: :json)
+          end
+
+          row << tile
+        end
+      end
+
+      tiles << row unless row.empty?
+    end
+
+    return {
+      player: {
+        x: player_x,
+        y: player_y,
+      },
+      tiles: tiles,
+    }
+  end
+
+  def monsters_as_json(monsters)
+    monsters.map do |monster|
+      monster_as_json(monster)
+    end
+  end
+
+  def monster_as_json(monster)
+    {
+      type: monster.monster_type,
+      x: monster.monster_x,
+      y: monster.monster_y,
+      alive: monster.alive?,
+      health: monster.health,
+      level: monster.monster_level,
+    }
   end
 end

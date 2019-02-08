@@ -1,0 +1,50 @@
+$unit-size: 64px;
+$font-size: 16px;
+
+div[data-react-class="LocalLevel"] {
+  width: $unit-size * 9;
+  margin: 0 auto;
+
+  div.message-bar {
+    display: block;
+    height: $unit-size;
+  }
+
+  table.local-level {
+    margin: 0 auto;
+
+    td {
+      width: $unit-size;
+      height: $unit-size;
+      font-size: $font-size;
+      vertical-align: top;
+      text-align: center;
+
+      small.debug {
+        font-size: $font-size * 0.8;
+        color: rgba(0,0,0,0.3);
+        display: block;
+      }
+
+      &.tile {
+        &.void {
+          background: black;
+        }
+        &.wall {
+          background: mix(yellow, white);
+        }
+        &.floor {
+          background: #ccc;
+        }
+        &.unknown {
+          background: magenta;
+        }
+
+        a.visit {
+          display: block;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
