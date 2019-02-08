@@ -4,41 +4,6 @@ import PropTypes from 'prop-types'
 
 import "./local_level.scss"
 
-// ------------- INCORRECT:
-// You cannot render React components passing along objects as keys. They have to all be native. Ugh.
-//
-// class Tile extends React.Component { // alt: import { Component } from 'react', and use Component here directly
-//   render() {
-//     return <td>
-//       {this.props.tile}
-//     </td>
-//   }
-// }
-
-// class Row extends React.Component {
-//   render() {
-//     return <tr>
-//       { this.props.row.map((tile, index) => (
-//         <Tile key={tile.x + "_" + tile.y} tile={tile} />
-//       ))}
-//     </tr>
-//   }
-// }
-
-// class LocalLevel extends React.Component {
-//   render() {
-//     return <table>
-//       { this.props.data.tiles.map((row, index) => (
-//         // {...x} destructs all keys of X to the parent component
-//         <Row key={index} row={row} />
-//       ))}
-//     </table>
-//   }
-// }
-// -------------
-
-// Correct: You need to render everything as once.
-
 const TILE_CLASSES = {
   0: "void",
   1: "wall",
