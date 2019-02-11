@@ -1,6 +1,6 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import PropTypes from 'prop-types'
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
+import * as PropTypes from 'prop-types'
 
 import "./local_level.scss"
 
@@ -10,7 +10,31 @@ const TILE_CLASSES = {
   2: "floor",
 };
 
-class Tile extends React.Component {
+interface IPlayer {
+  x: number;
+  y: number;
+};
+
+interface ITile {
+  x:          number;
+  y:          number;
+  tile:       string;
+  visit_path: string;
+  monsters: {
+    type:   string;
+    health: number;
+  }[];
+};
+
+interface TileProps {
+  parent: LocalLevel;
+  player: IPlayer;
+  tile:   ITile;
+}
+
+class Tile extends React.PureComponent<TileProps> {
+  props: TileProps;
+
   handleVisit = (e) => {
     let path = this.props.tile.visit_path;
 
@@ -34,7 +58,11 @@ class Tile extends React.Component {
         });
 
         if (response.level) {
-          this.props.parent.setState({ data: response.level });
+          this.props.parent.setState({
+            tiles:           response.level.tiles,
+            player:          response.level.player,
+            somethingRandom: true,  // ... does not fail, because setState accepts ANY input
+          });
         };
       });
   };
@@ -63,7 +91,7 @@ class Tile extends React.Component {
     let tileContent = TILE_CLASSES[parseInt(this.props.tile.tile, 10)];
     tileClasses.push(tileContent || "unknown");
 
-    let button = "";
+    let button;
     if (this.props.tile.visit_path) {
       // NOTE if you use data-method, then onClick will never be called (Chrome)
 
@@ -84,11 +112,20 @@ class Tile extends React.Component {
   }
 }
 
-class LocalLevel extends React.Component {
-  constructor(props) {
+interface LocalLevelState {
+  messages: string[];
+  errors:   string[];
+  tiles:    ITile[][];
+  player:   IPlayer;
+}
+
+class LocalLevel extends React.PureComponent<{ data: LocalLevelState }> {
+  state: LocalLevelState;
+
+  constructor(props: { data: LocalLevelState }) {
     super(props);
 
-    this.state = { data: props.data };
+    this.state = props.data;
   }
 
   render() {
@@ -107,13 +144,13 @@ class LocalLevel extends React.Component {
     //   </tbody>
     // </table>
 
-    const renderRow = (row, index) => {
+    const renderRow = (row: ITile[], index: number) => {
       // (...); is necessary for .jsx syntax.
       // {...; return X} is necessary to be a valid function
       //   AND to have if/lets/vars inside the block!
 
-      const tableTiles = row.map((tile) =>
-        <Tile key={tile.x + "," + tile.y} tile={tile} player={this.state.data.player} parent={this} />
+      const tableTiles = row.map((tile: ITile) =>
+        <Tile key={tile.x + "," + tile.y} tile={tile} player={this.state.player} parent={this} />
       );
 
       return <tr key={`row${index}`}>
@@ -145,7 +182,7 @@ class LocalLevel extends React.Component {
 
       <table className="local-level">
         <tbody>
-          { this.state.data.tiles.map(renderRow) }
+          { this.state.tiles.map(renderRow) }
         </tbody>
       </table>
     </div>);
